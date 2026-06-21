@@ -1,6 +1,7 @@
 'use server';
 
 import { hash } from 'bcryptjs';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { signIn } from '@/lib/auth';
@@ -46,7 +47,7 @@ export async function signupAction(formData: FormData): Promise<Result<void, str
     redirect: false,
   });
 
-  return { ok: true, value: undefined };
+  redirect('/onboarding');
 }
 
 /** Signs in with credentials. */
@@ -62,7 +63,7 @@ export async function loginAction(formData: FormData): Promise<Result<void, stri
       password: parsed.data.password,
       redirect: false,
     });
-    return { ok: true, value: undefined };
+    redirect('/dashboard');
   } catch {
     return { ok: false, error: 'Invalid email or password' };
   }

@@ -26,6 +26,12 @@ vi.mock('@/lib/auth', () => ({
   signIn: (...args: unknown[]) => mockSignIn(...args),
 }));
 
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn(() => {
+    throw new Error('NEXT_REDIRECT');
+  }),
+}));
+
 describe('authActions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -59,8 +65,7 @@ describe('authActions', () => {
     fd.set('name', 'Test User');
     fd.set('email', 'new@example.com');
     fd.set('password', 'SecurePass1');
-    const result = await signupAction(fd);
-    expect(result.ok).toBe(true);
+    await expect(signupAction(fd)).rejects.toThrow('NEXT_REDIRECT');
     expect(mockSignIn).toHaveBeenCalled();
   });
 

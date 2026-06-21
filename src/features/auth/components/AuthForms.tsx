@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signupAction, loginAction } from '../api/authActions';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
 export function SignupForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -20,9 +18,7 @@ export function SignupForm() {
       const result = await signupAction(formData);
       if (!result.ok) {
         setError(result.error);
-        return;
       }
-      router.push('/onboarding');
     });
   };
 
@@ -60,7 +56,6 @@ export function SignupForm() {
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -72,9 +67,7 @@ export function LoginForm() {
       const result = await loginAction(formData);
       if (!result.ok) {
         setError(result.error);
-        return;
       }
-      router.push('/dashboard');
     });
   };
 
