@@ -1,8 +1,8 @@
-import { requireUserId } from '@/lib/session';
 import { listCarbonEntries } from '@/features/tracking/api/carbonEntryRepository';
 import { getWeekTotal } from '@/features/tracking/api/carbonSummaryRepository';
-import { TrackingForm } from '@/features/tracking/components/TrackingForm';
 import { EntryList } from '@/features/tracking/components/EntryList';
+import { TrackingForm } from '@/features/tracking/components/TrackingForm';
+import { requireUserId } from '@/lib/session';
 
 export const metadata = { title: 'Track' };
 

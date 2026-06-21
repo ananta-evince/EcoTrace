@@ -1,8 +1,9 @@
 'use server';
 
+import { DEFAULT_ENTRY_PAGE_SIZE } from '@/lib/constants';
+import type { Result } from '@/lib/result';
 import { requireUserId } from '@/lib/session';
-import { carbonEntrySchema, type CarbonEntryInput } from '../types/schemas';
-import { DEFAULT_COMMUTE_KM } from '../utils/emissionFactors';
+
 import {
   createCarbonEntry,
   deleteCarbonEntry,
@@ -10,7 +11,9 @@ import {
   updateCarbonEntry,
 } from '../api/carbonEntryRepository';
 import type { EntryId, CarbonEntry } from '../types';
-import type { Result } from '@/lib/result';
+import { carbonEntrySchema, type CarbonEntryInput } from '../types/schemas';
+import { DEFAULT_COMMUTE_KM } from '../utils/emissionFactors';
+
 
 /** Server action to create a carbon entry. */
 export async function createEntryAction(
@@ -29,7 +32,7 @@ export async function createEntryAction(
 /** Server action to list entries with optional cursor pagination. */
 export async function listEntriesAction(cursor?: string) {
   const userId = await requireUserId();
-  return listCarbonEntries(userId, { take: 20, ...(cursor ? { cursor } : {}) });
+  return listCarbonEntries(userId, { take: DEFAULT_ENTRY_PAGE_SIZE, ...(cursor ? { cursor } : {}) });
 }
 
 /** Server action to delete an entry. */

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { authConfig } from '../auth.config';
 
 describe('authConfig callbacks', () => {

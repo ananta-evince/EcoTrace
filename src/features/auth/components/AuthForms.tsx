@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { signupAction, loginAction } from '../api/authActions';
+import { useState, useTransition } from 'react';
+
+
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+
+import { signupAction, loginAction } from '../api/authActions';
 
 export function SignupForm() {
   const [error, setError] = useState<string | null>(null);

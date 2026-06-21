@@ -1,5 +1,5 @@
-import { auth } from '@/lib/auth';
 import type { UserId } from '@/features/tracking/types';
+import { auth } from '@/lib/auth';
 
 /** Returns the authenticated user id or throws when the session is missing. */
 export async function requireUserId(): Promise<UserId> {

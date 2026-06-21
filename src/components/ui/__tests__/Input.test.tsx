@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+
 import { expectNoA11yViolations } from '@/test/axe';
+
 import { Input } from '../Input';
 
 describe('Input', () => {

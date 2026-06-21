@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { EMISSION_CATEGORIES, UNITS } from './index';
 
 export const carbonEntrySchema = z.object({

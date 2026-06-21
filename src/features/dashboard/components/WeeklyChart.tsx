@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
 import { CATEGORY_COLORS } from '@/components/charts/chartColors';
 
 type WeeklyChartProps = {

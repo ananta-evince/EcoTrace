@@ -2,8 +2,9 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { formatKgCO2e } from '@/lib/utils';
+
 import type { DashboardData } from '@/features/tracking/api/carbonSummaryRepository';
+import { formatKgCO2e } from '@/lib/utils';
 
 const WeeklyChart = dynamic(() => import('./WeeklyChart').then((m) => m.WeeklyChart), {
   ssr: false,

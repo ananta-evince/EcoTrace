@@ -25,7 +25,7 @@ src/
 └── lib/              # Cross-cutting utilities (auth, prisma, result, session)
 ```
 
-Each feature owns its server actions, components, and types. Server actions return a `Result<T, E>` type for explicit error handling instead of throwing for validation failures.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for module layout, patterns, and data flow.
 
 ## Code Quality
 

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { getCarbonSummary, getDashboardData } from '../carbonSummaryRepository';
 
 const mockFindMany = vi.fn();

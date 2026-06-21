@@ -1,11 +1,15 @@
+import type { Prisma } from '@prisma/client';
+
+import { DEFAULT_ENTRY_PAGE_SIZE } from '@/lib/constants';
 import { prisma } from '@/lib/prisma';
 import type { Result } from '@/lib/result';
 import { ok, err } from '@/lib/result';
+
 import type { CarbonEntry, EntryId, UserId } from '../types';
 import type { CarbonEntryInput, EntryQueryInput } from '../types/schemas';
 import { calculateEmissions } from '../utils/calculateEmissions';
 
-function mapEntry(row: {
+type CarbonEntryRow = {
   id: string;
   userId: string;
   category: string;
@@ -16,7 +20,10 @@ function mapEntry(row: {
   date: Date;
   note: string | null;
   createdAt: Date;
-}): CarbonEntry {
+};
+
+/** Maps a Prisma row to the domain CarbonEntry type. */
+function mapEntry(row: CarbonEntryRow): CarbonEntry {
   return {
     id: row.id as EntryId,
     userId: row.userId as UserId,
@@ -29,6 +36,19 @@ function mapEntry(row: {
     ...(row.note ? { note: row.note } : {}),
     createdAt: row.createdAt,
   };
+}
+
+/** Builds a typed Prisma filter for listing entries. */
+function buildEntryWhere(userId: UserId, query: EntryQueryInput): Prisma.CarbonEntryWhereInput {
+  const where: Prisma.CarbonEntryWhereInput = { userId };
+  if (query.category) where.category = query.category;
+  if (query.startDate || query.endDate) {
+    where.date = {
+      ...(query.startDate ? { gte: query.startDate } : {}),
+      ...(query.endDate ? { lte: query.endDate } : {}),
+    };
+  }
+  return where;
 }
 
 /** Creates a carbon entry for a user. */
@@ -68,24 +88,16 @@ export async function listCarbonEntries(
   userId: UserId,
   query: EntryQueryInput,
 ): Promise<{ entries: CarbonEntry[]; nextCursor?: string }> {
-  const where: Record<string, unknown> = { userId };
-  if (query.category) where.category = query.category;
-  if (query.startDate || query.endDate) {
-    where.date = {
-      ...(query.startDate ? { gte: query.startDate } : {}),
-      ...(query.endDate ? { lte: query.endDate } : {}),
-    };
-  }
-
+  const take = query.take ?? DEFAULT_ENTRY_PAGE_SIZE;
   const rows = await prisma.carbonEntry.findMany({
-    where,
-    take: query.take + 1,
+    where: buildEntryWhere(userId, query),
+    take: take + 1,
     ...(query.cursor ? { cursor: { id: query.cursor }, skip: 1 } : {}),
     orderBy: { date: 'desc' },
   });
 
   let nextCursor: string | undefined;
-  if (rows.length > query.take) {
+  if (rows.length > take) {
     const next = rows.pop();
     nextCursor = next?.id;
   }

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+
 import { SignupForm } from '@/features/auth/components/AuthForms';
 
 export const metadata: Metadata = { title: 'Sign up' };

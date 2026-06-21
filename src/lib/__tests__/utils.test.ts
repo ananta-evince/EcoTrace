@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { cn, debounce, formatKgCO2e, formatDate, hashString } from '../utils';
 
 describe('cn', () => {

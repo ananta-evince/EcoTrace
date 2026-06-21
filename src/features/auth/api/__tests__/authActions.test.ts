@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { signupAction, loginAction } from '../authActions';
 
 vi.mock('@/lib/request', () => ({

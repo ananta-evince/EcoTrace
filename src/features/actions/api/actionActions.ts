@@ -1,8 +1,8 @@
 'use server';
 
-import { requireUserId } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import type { Result } from '@/lib/result';
+import { requireUserId } from '@/lib/session';
 
 /** Adopts a reduction action for the user. */
 export async function adoptActionAction(actionId: string): Promise<Result<void, string>> {

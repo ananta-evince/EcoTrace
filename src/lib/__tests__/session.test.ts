@@ -1,11 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
+
+import { auth } from '@/lib/auth';
+
 import { requireUserId } from '../session';
 
 vi.mock('@/lib/auth', () => ({
   auth: vi.fn(),
 }));
-
-import { auth } from '@/lib/auth';
 
 describe('requireUserId', () => {
   it('returns the authenticated user id', async () => {

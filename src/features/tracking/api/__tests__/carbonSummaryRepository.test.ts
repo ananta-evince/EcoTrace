@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { calculateBaselineFootprint } from '../carbonSummaryRepository';
 
 describe('calculateBaselineFootprint', () => {

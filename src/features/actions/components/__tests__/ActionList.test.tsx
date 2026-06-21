@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ActionList } from '../ActionList';
+import { describe, it, expect, vi } from 'vitest';
+
 import { adoptActionAction, completeActionAction } from '../../api/actionActions';
+import { ActionList } from '../ActionList';
 
 vi.mock('../../api/actionActions', () => ({
   adoptActionAction: vi.fn(() => Promise.resolve({ ok: true, value: undefined })),

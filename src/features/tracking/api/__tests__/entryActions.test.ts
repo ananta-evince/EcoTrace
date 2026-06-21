@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
 import { auth } from '@/lib/auth';
+
 import { createEntryAction, deleteEntryAction, listEntriesAction, updateEntryAction } from '../entryActions';
 vi.mock('@/lib/auth', () => ({
   auth: vi.fn(() => Promise.resolve({ user: { id: 'user-1' } })),

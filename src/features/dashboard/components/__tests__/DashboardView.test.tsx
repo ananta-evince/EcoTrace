@@ -1,8 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DashboardView, MetricCard } from '../DashboardView';
+import { describe, it, expect, vi } from 'vitest';
+
 import type { DashboardData } from '@/features/tracking/api/carbonSummaryRepository';
+
+import { DashboardView, MetricCard } from '../DashboardView';
+
 
 vi.mock('next/dynamic', () => ({
   default: () => () => <div data-testid="chart">Chart</div>,

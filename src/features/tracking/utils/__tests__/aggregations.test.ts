@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { getWeeklyRollup, getMonthlyAggregation, getRollingAverage } from '../aggregations';
 
 const entries = [

@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { generateInsightsAction } from '../api/generateInsights';
+
 import { Button } from '@/components/ui/Button';
+
+import { generateInsightsAction } from '../api/generateInsights';
+
 import { StreamingText } from './StreamingText';
 
 type InsightsPanelProps = {

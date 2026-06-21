@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { carbonEntrySchema } from '../../types/schemas';
 
 describe('carbonEntrySchema', () => {

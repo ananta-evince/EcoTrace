@@ -1,14 +1,15 @@
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { compare } from 'bcryptjs';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { compare } from 'bcryptjs';
 import { z } from 'zod';
+
+import { authConfig } from '@/lib/auth.config';
+import { getAuthSecret } from '@/lib/env';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, resetRateLimit } from '@/lib/rateLimit';
-import { getAuthSecret } from '@/lib/env';
 import { parseClientIp } from '@/lib/request';
-import { authConfig } from '@/lib/auth.config';
 
 const loginSchema = z.object({
   email: z.string().email(),

@@ -3,10 +3,11 @@
 import { hash } from 'bcryptjs';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
+
 import { signIn } from '@/lib/auth';
-import { getClientIp } from '@/lib/request';
+import { prisma } from '@/lib/prisma';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { getClientIp } from '@/lib/request';
 import type { Result } from '@/lib/result';
 
 const signupSchema = z.object({

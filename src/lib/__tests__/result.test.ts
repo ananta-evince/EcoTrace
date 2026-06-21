@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { ok, err, mapResult, flatMapResult, unwrapOr } from '../result';
 
 describe('Result utilities', () => {

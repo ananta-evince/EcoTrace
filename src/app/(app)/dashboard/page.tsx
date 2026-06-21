@@ -1,8 +1,8 @@
-import { requireUserId } from '@/lib/session';
-import { getDashboardData } from '@/features/tracking/api/carbonSummaryRepository';
 import { DashboardView } from '@/features/dashboard/components/DashboardView';
-import { InsightsPanel } from '@/features/insights/components/InsightsPanel';
 import { getLatestInsightAction } from '@/features/insights/api/generateInsights';
+import { InsightsPanel } from '@/features/insights/components/InsightsPanel';
+import { getDashboardData } from '@/features/tracking/api/carbonSummaryRepository';
+import { requireUserId } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 

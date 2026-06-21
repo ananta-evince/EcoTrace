@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+
 import { SkipLink } from '@/components/layout/SkipLink';
 import { Providers } from '@/components/Providers';
 import './globals.css';

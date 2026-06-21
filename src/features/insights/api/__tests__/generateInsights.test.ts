@@ -27,6 +27,7 @@ vi.mock('@/lib/gemini', () => ({
 }));
 
 import { auth } from '@/lib/auth';
+
 import { generateInsightsAction, getLatestInsightAction } from '../generateInsights';
 
 describe('generateInsightsAction', () => {

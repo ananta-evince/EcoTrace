@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+
 import { CATEGORY_COLORS } from '@/components/charts/chartColors';
 import { formatKgCO2e } from '@/lib/utils';
 

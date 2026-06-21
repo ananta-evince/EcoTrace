@@ -1,12 +1,13 @@
 'use server';
 
 import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
-import { requireUserId } from '@/lib/session';
+
 import { calculateBaselineFootprint } from '@/features/tracking/api/carbonSummaryRepository';
-import { getNationalDailyAverage, TARGET_ANNUAL_TONNES } from '@/features/tracking/utils/emissionFactors';
-import type { Result } from '@/lib/result';
 import type { UserId } from '@/features/tracking/types';
+import { getNationalDailyAverage, TARGET_ANNUAL_TONNES } from '@/features/tracking/utils/emissionFactors';
+import { prisma } from '@/lib/prisma';
+import type { Result } from '@/lib/result';
+import { requireUserId } from '@/lib/session';
 
 const step1Schema = z.object({
   country: z.string().length(2),

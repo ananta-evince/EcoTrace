@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import * as Icons from 'lucide-react';
-import { REDUCTION_ACTIONS, type ReductionAction } from '../data/reductionActions';
-import { adoptActionAction, completeActionAction } from '../api/actionActions';
-import { EMISSION_CATEGORIES } from '@/features/tracking/types';
-import { Button } from '@/components/ui/Button';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
+
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { EMISSION_CATEGORIES } from '@/features/tracking/types';
+import { CATEGORY_LABELS } from '@/lib/constants';
+
+import { adoptActionAction, completeActionAction } from '../api/actionActions';
+import { REDUCTION_ACTIONS, type ReductionAction } from '../data/reductionActions';
 
 type UserAction = {
   actionId: string;
@@ -20,13 +23,7 @@ type ActionListProps = {
 
 const effortLabels = { quick: 'Quick Win', medium: 'This Month', lifestyle: 'Lifestyle Change' };
 
-const categoryLabels: Record<(typeof EMISSION_CATEGORIES)[number], string> = {
-  transport: 'Transport',
-  food: 'Food',
-  home_energy: 'Home energy',
-  shopping: 'Shopping',
-  services: 'Services',
-};
+const categoryLabels = CATEGORY_LABELS;
 
 const ACTION_ICONS: Record<string, React.ElementType> = {
   Zap: Icons.Zap,
@@ -43,6 +40,29 @@ const ACTION_ICONS: Record<string, React.ElementType> = {
   Leaf: Icons.Leaf,
   Plug: Icons.Plug,
   Bus: Icons.Bus,
+  Wrench: Icons.Wrench,
+  Wind: Icons.Wind,
+  Apple: Icons.Apple,
+  Users: Icons.Users,
+  House: Icons.House,
+  Monitor: Icons.Monitor,
+  ShoppingBag: Icons.ShoppingBag,
+  Milk: Icons.Milk,
+  Car: Icons.Car,
+  Sun: Icons.Sun,
+  Sprout: Icons.Sprout,
+  RefreshCw: Icons.RefreshCw,
+  VideoOff: Icons.VideoOff,
+  ChefHat: Icons.ChefHat,
+  BookOpen: Icons.BookOpen,
+  Gem: Icons.Gem,
+  Calendar: Icons.Calendar,
+  Fan: Icons.Fan,
+  Recycle: Icons.Recycle,
+  CreditCard: Icons.CreditCard,
+  Plane: Icons.Plane,
+  DoorOpen: Icons.DoorOpen,
+  Share2: Icons.Share2,
 };
 
 function getActionIcon(iconName: string): React.ElementType {

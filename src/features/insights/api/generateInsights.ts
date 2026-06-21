@@ -1,10 +1,11 @@
 'use server';
 
-import { requireUserId } from '@/lib/session';
+import { getCarbonSummary } from '@/features/tracking/api/carbonSummaryRepository';
+import { INSIGHT_SUMMARY_WEEKS } from '@/lib/constants';
 import { generateGeminiContent } from '@/lib/gemini';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/session';
 import { hashString } from '@/lib/utils';
-import { getCarbonSummary } from '@/features/tracking/api/carbonSummaryRepository';
 
 const MAX_RETRIES = 3;
 const TIMEOUT_MS = 30_000;
@@ -49,7 +50,7 @@ export async function generateInsightsAction(): Promise<{
   generatedAt: Date;
 }> {
   const userId = await requireUserId();
-  const summary = await getCarbonSummary(userId, { weeks: 4 });
+  const summary = await getCarbonSummary(userId, { weeks: INSIGHT_SUMMARY_WEEKS });
 
   const dataKey = JSON.stringify(summary);
   const dataHash = await hashString(dataKey);

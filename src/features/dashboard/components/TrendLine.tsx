@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+
 import { TARGET_DAILY_KG } from '@/features/tracking/utils/emissionFactors';
 
 type TrendLineProps = {

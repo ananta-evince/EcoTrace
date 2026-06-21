@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
+
+import { OnboardingWizard } from '@/features/auth/components/OnboardingWizard';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { OnboardingWizard } from '@/features/auth/components/OnboardingWizard';
 
 export const metadata = { title: 'Onboarding' };
 

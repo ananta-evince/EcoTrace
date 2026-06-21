@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+
 import { getClientIp } from '../request';
 
 vi.mock('next/headers', () => ({

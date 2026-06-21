@@ -1,24 +1,18 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useTransition, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { carbonEntrySchema, type CarbonEntryInput } from '../types/schemas';
-import { calculateEmissions } from '../utils/calculateEmissions';
-import { SUBCATEGORIES, EMISSION_CATEGORIES } from '../types';
-import { createEntryAction, quickCommuteAction } from '../api/entryActions';
+
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { CATEGORY_LABELS, EMISSION_PREVIEW_DEBOUNCE_MS } from '@/lib/constants';
 import { formatKgCO2e } from '@/lib/utils';
-import type { EmissionCategory } from '../types';
 
-const categoryLabels: Record<EmissionCategory, string> = {
-  transport: 'Transport',
-  food: 'Food',
-  home_energy: 'Home Energy',
-  shopping: 'Shopping',
-  services: 'Services',
-};
+import { createEntryAction, quickCommuteAction } from '../api/entryActions';
+import { SUBCATEGORIES, EMISSION_CATEGORIES, type EmissionCategory } from '../types';
+import { carbonEntrySchema, type CarbonEntryInput } from '../types/schemas';
+import { calculateEmissions } from '../utils/calculateEmissions';
 
 export function TrackingForm() {
   const [isPending, startTransition] = useTransition();
@@ -61,7 +55,7 @@ export function TrackingForm() {
       } catch {
         setPreview(0);
       }
-    }, 300);
+    }, EMISSION_PREVIEW_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [category, subcategory, value, unit]);
 
@@ -106,7 +100,7 @@ export function TrackingForm() {
             {EMISSION_CATEGORIES.map((cat) => (
               <label key={cat} className="flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm dark:border-gray-700">
                 <input type="radio" value={cat} {...register('category')} className="accent-brand-600" />
-                {categoryLabels[cat]}
+                {CATEGORY_LABELS[cat]}
               </label>
             ))}
           </div>

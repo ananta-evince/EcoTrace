@@ -1,6 +1,7 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
 import path from 'path';
+
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react()],
@@ -18,20 +19,7 @@ export default defineConfig({
         statements: 80,
       },
       include: ['src/features/**', 'src/lib/**'],
-      exclude: [
-        '**/__tests__/**',
-        '**/*.test.{ts,tsx}',
-        '**/index.ts',
-        'src/lib/auth.ts',
-        'src/lib/prisma.ts',
-        'src/features/auth/components/AuthForms.tsx',
-        'src/features/**/components/OnboardingWizard.tsx',
-        'src/features/tracking/components/TrackingForm.tsx',
-        'src/features/dashboard/components/DonutChart.tsx',
-        'src/features/dashboard/components/TrendLine.tsx',
-        'src/features/dashboard/components/WeeklyChart.tsx',
-        'src/features/dashboard/components/ComparisonGauge.tsx',
-      ],
+      exclude: ['**/__tests__/**', '**/*.test.{ts,tsx}'],
     },
   },
   resolve: {
