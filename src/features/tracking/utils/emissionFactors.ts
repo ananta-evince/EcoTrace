@@ -41,6 +41,23 @@ export const NATIONAL_AVERAGES: Record<string, number> = {
 export const TARGET_DAILY_KG = 6.85;
 export const TARGET_ANNUAL_TONNES = 2.5;
 
+export const DEFAULT_COUNTRY = 'GB';
+export const TREND_INCREASE_THRESHOLD = 1.05;
+export const TREND_DECREASE_THRESHOLD = 0.95;
+export const DEFAULT_HOUSEHOLD_DIVISOR = 2.4;
+export const ANNUAL_CAR_OWNERSHIP_KG = 1200;
+export const DAYS_IN_MONTH = 30;
+export const STREAK_LOOKBACK_DAYS = 400;
+export const ROLLING_AVERAGE_DAYS = 90;
+export const WEEKLY_ROLLUP_WEEKS = 8;
+export const DEFAULT_COMMUTE_KM = 20;
+export const HOME_SIZE_ANNUAL_FACTOR = 5;
+
+/** Resolves the national daily average for a country code. */
+export function getNationalDailyAverage(country: string): number {
+  return NATIONAL_AVERAGES[country] ?? NATIONAL_AVERAGES[DEFAULT_COUNTRY] ?? 14.2;
+}
+
 /** Finds emission factor for category/subcategory. */
 export function getEmissionFactor(
   category: EmissionCategory,

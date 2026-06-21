@@ -13,7 +13,28 @@ A production-ready Next.js application that helps individuals understand, track,
 
 ## Tech Stack
 
-Next.js 14 · TypeScript · Tailwind CSS · Prisma · PostgreSQL · NextAuth.js · Zustand · React Query · Recharts · Vitest · Playwright
+Next.js 14 · TypeScript · Tailwind CSS · Prisma · PostgreSQL · NextAuth.js · Recharts · Vitest · Playwright
+
+## Architecture
+
+```
+src/
+├── app/              # Next.js App Router pages and API routes
+├── features/         # Domain modules (auth, tracking, dashboard, insights, actions)
+├── components/       # Shared UI and layout primitives
+└── lib/              # Cross-cutting utilities (auth, prisma, result, session)
+```
+
+Each feature owns its server actions, components, and types. Server actions return a `Result<T, E>` type for explicit error handling instead of throwing for validation failures.
+
+## Code Quality
+
+- **Strict TypeScript** — `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`
+- **Zero-warning ESLint** — Next.js, jsx-a11y, import, and security plugins
+- **Pre-commit hooks** — Husky runs lint, type-check, and tests before every commit
+- **Branded IDs** — `UserId` and `EntryId` prevent accidental ID mixing
+- **Named constants** — emission factors and thresholds live in `emissionFactors.ts`
+- **Shared auth** — `requireUserId()` in `lib/session.ts` centralises session checks
 
 ## Getting Started
 

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
+/** Shared Prisma client singleton (reused in dev to avoid connection exhaustion). */
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({ log: process.env.NODE_ENV === 'development' ? ['query'] : [] });

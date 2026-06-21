@@ -1,9 +1,9 @@
-import { auth } from '@/lib/auth';
+import { requireUserId } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import { getDashboardData } from '@/features/tracking/api/carbonSummaryRepository';
+import { getEmissionFactor } from '@/features/tracking/utils/emissionFactors';
 import { Badge } from '@/components/ui/Badge';
 import { formatKgCO2e } from '@/lib/utils';
-import type { UserId } from '@/features/tracking/types';
 
 export const metadata = { title: 'Profile' };
 
@@ -13,9 +13,10 @@ const ACHIEVEMENTS = [
   { id: 'beat-target', label: 'Beat daily target', check: (_: number, __: number, today: number, target: number) => today <= target && today > 0 },
 ];
 
+const CAR_PETROL_FACTOR = getEmissionFactor('transport', 'car_petrol')?.factor ?? 0.172;
+
 export default async function ProfilePage() {
-  const session = await auth();
-  const userId = session!.user!.id as UserId;
+  const userId = await requireUserId();
 
   const [user, data, entryCount] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId } }),
@@ -27,7 +28,7 @@ export default async function ProfilePage() {
     a.check(entryCount, data.streak, data.todayTotal, data.dailyTarget),
   );
 
-  const kmEquivalent = (data.weekTotal / 0.172).toFixed(0);
+  const kmEquivalent = (data.weekTotal / CAR_PETROL_FACTOR).toFixed(0);
   const annualProjection = ((data.weekTotal / 7) * 365) / 1000;
 
   return (

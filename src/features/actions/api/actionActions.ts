@@ -1,15 +1,8 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireUserId } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
 import type { Result } from '@/lib/result';
-import type { UserId } from '@/features/tracking/types';
-
-async function requireUserId(): Promise<UserId> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('Unauthorized');
-  return session.user.id as UserId;
-}
 
 /** Adopts a reduction action for the user. */
 export async function adoptActionAction(actionId: string): Promise<Result<void, string>> {
@@ -38,7 +31,7 @@ export async function completeActionAction(actionId: string): Promise<Result<voi
   return { ok: true, value: undefined };
 }
 
-/** Gets user's actions. */
+/** Gets the user's adopted and completed actions. */
 export async function getUserActionsAction() {
   const userId = await requireUserId();
   return prisma.userAction.findMany({ where: { userId }, orderBy: { startedAt: 'desc' } });

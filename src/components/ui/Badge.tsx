@@ -6,6 +6,7 @@ type BadgeProps = {
   className?: string;
 };
 
+/** Small status badge with semantic colour variants. */
 export function Badge({ children, variant = 'default', className }: BadgeProps) {
   const variants = {
     success: 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200',

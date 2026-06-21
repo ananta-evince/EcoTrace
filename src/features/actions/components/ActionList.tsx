@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import * as Icons from 'lucide-react';
 import { REDUCTION_ACTIONS, type ReductionAction } from '../data/reductionActions';
 import { adoptActionAction, completeActionAction } from '../api/actionActions';
+import { EMISSION_CATEGORIES } from '@/features/tracking/types';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
@@ -18,9 +20,41 @@ type ActionListProps = {
 
 const effortLabels = { quick: 'Quick Win', medium: 'This Month', lifestyle: 'Lifestyle Change' };
 
+const categoryLabels: Record<(typeof EMISSION_CATEGORIES)[number], string> = {
+  transport: 'Transport',
+  food: 'Food',
+  home_energy: 'Home energy',
+  shopping: 'Shopping',
+  services: 'Services',
+};
+
+const ACTION_ICONS: Record<string, React.ElementType> = {
+  Zap: Icons.Zap,
+  Beef: Icons.Beef,
+  Home: Icons.Home,
+  Thermometer: Icons.Thermometer,
+  Train: Icons.Train,
+  Lightbulb: Icons.Lightbulb,
+  Bike: Icons.Bike,
+  Trash2: Icons.Trash2,
+  ThermometerSnowflake: Icons.ThermometerSnowflake,
+  Shirt: Icons.Shirt,
+  Droplets: Icons.Droplets,
+  Leaf: Icons.Leaf,
+  Plug: Icons.Plug,
+  Bus: Icons.Bus,
+};
+
+function getActionIcon(iconName: string): React.ElementType {
+  return ACTION_ICONS[iconName] ?? Icons.Leaf;
+}
+
+/** Displays filterable reduction actions with adopt and complete flows. */
 export function ActionList({ userActions }: ActionListProps) {
+  const router = useRouter();
   const [filter, setFilter] = useState<'all' | 'quick' | 'medium' | 'lifestyle'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const adoptedIds = new Set(userActions.map((a) => a.actionId));
@@ -28,21 +62,21 @@ export function ActionList({ userActions }: ActionListProps) {
     userActions.filter((a) => a.status === 'completed').map((a) => a.actionId),
   );
 
-  const filtered = REDUCTION_ACTIONS.filter((a) => {
-    if (filter !== 'all' && a.effort !== filter) return false;
-    if (categoryFilter !== 'all' && a.category !== categoryFilter) return false;
+  const filtered = REDUCTION_ACTIONS.filter((action) => {
+    if (filter !== 'all' && action.effort !== filter) return false;
+    if (categoryFilter !== 'all' && action.category !== categoryFilter) return false;
     return true;
   });
 
-  const handleAdopt = (actionId: string) => {
+  const runAction = (action: () => Promise<{ ok: boolean; error?: string }>) => {
+    setError(null);
     startTransition(async () => {
-      await adoptActionAction(actionId);
-    });
-  };
-
-  const handleComplete = (actionId: string) => {
-    startTransition(async () => {
-      await completeActionAction(actionId);
+      const result = await action();
+      if (!result.ok) {
+        setError(result.error ?? 'Something went wrong');
+        return;
+      }
+      router.refresh();
     });
   };
 
@@ -68,6 +102,38 @@ export function ActionList({ userActions }: ActionListProps) {
         ))}
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => setCategoryFilter('all')}
+          className={`rounded-full px-3 py-1 text-sm ${
+            categoryFilter === 'all' ? 'bg-brand-100 text-brand-800' : 'bg-gray-100 dark:bg-gray-800'
+          }`}
+        >
+          All categories
+        </button>
+        {EMISSION_CATEGORIES.map((category) => (
+          <button
+            key={category}
+            type="button"
+            onClick={() => setCategoryFilter(category)}
+            className={`rounded-full px-3 py-1 text-sm ${
+              categoryFilter === category
+                ? 'bg-brand-100 text-brand-800'
+                : 'bg-gray-100 dark:bg-gray-800'
+            }`}
+          >
+            {categoryLabels[category]}
+          </button>
+        ))}
+      </div>
+
+      {error && (
+        <p role="alert" className="text-sm text-carbon-high">
+          ⚠ {error}
+        </p>
+      )}
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((action) => (
           <ActionCard
@@ -75,8 +141,8 @@ export function ActionList({ userActions }: ActionListProps) {
             action={action}
             adopted={adoptedIds.has(action.id)}
             completed={completedIds.has(action.id)}
-            onAdopt={() => handleAdopt(action.id)}
-            onComplete={() => handleComplete(action.id)}
+            onAdopt={() => runAction(() => adoptActionAction(action.id))}
+            onComplete={() => runAction(() => completeActionAction(action.id))}
             pending={isPending}
           />
         ))}
@@ -100,8 +166,7 @@ function ActionCard({
   onComplete: () => void;
   pending: boolean;
 }) {
-  const IconComponent =
-    ((Icons as unknown) as Record<string, React.ElementType>)[action.icon] ?? Icons.Leaf;
+  const IconComponent = getActionIcon(action.icon);
 
   return (
     <article className="rounded-xl bg-white p-4 shadow-sm transition-all duration-200 hover:scale-[1.02] dark:bg-gray-950">

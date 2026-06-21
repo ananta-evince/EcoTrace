@@ -78,9 +78,9 @@ describe('generateInsightsAction', () => {
 });
 
 describe('getLatestInsightAction', () => {
-  it('returns null when unauthenticated', async () => {
+  it('throws when unauthenticated', async () => {
     vi.mocked(auth).mockResolvedValueOnce(null as never);
-    expect(await getLatestInsightAction()).toBeNull();
+    await expect(getLatestInsightAction()).rejects.toThrow('Unauthorized');
   });
 
   it('returns latest insight for user', async () => {

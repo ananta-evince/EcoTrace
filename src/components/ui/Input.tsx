@@ -6,6 +6,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
 };
 
+/** Accessible labelled text input with optional error message. */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, id, required, ...props }, ref) => {
     const inputId = id ?? props.name ?? label.toLowerCase().replace(/\s/g, '-');

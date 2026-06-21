@@ -5,10 +5,19 @@ import { generateInsightsAction } from '../api/generateInsights';
 import { Button } from '@/components/ui/Button';
 import { StreamingText } from './StreamingText';
 
-export function InsightsPanel() {
-  const [content, setContent] = useState<string | null>(null);
-  const [generatedAt, setGeneratedAt] = useState<Date | null>(null);
-  const [cached, setCached] = useState(false);
+type InsightsPanelProps = {
+  initialContent?: string | null;
+  initialGeneratedAt?: Date | null;
+};
+
+/** AI insights panel with cached content and on-demand generation. */
+export function InsightsPanel({
+  initialContent = null,
+  initialGeneratedAt = null,
+}: InsightsPanelProps) {
+  const [content, setContent] = useState<string | null>(initialContent);
+  const [generatedAt, setGeneratedAt] = useState<Date | null>(initialGeneratedAt);
+  const [cached, setCached] = useState(Boolean(initialContent));
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 

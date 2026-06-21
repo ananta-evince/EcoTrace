@@ -1,18 +1,16 @@
-import { auth } from '@/lib/auth';
+import { requireUserId } from '@/lib/session';
 import { listCarbonEntries } from '@/features/tracking/api/carbonEntryRepository';
-import { getDashboardData } from '@/features/tracking/api/carbonSummaryRepository';
+import { getWeekTotal } from '@/features/tracking/api/carbonSummaryRepository';
 import { TrackingForm } from '@/features/tracking/components/TrackingForm';
 import { EntryList } from '@/features/tracking/components/EntryList';
-import type { UserId } from '@/features/tracking/types';
 
 export const metadata = { title: 'Track' };
 
 export default async function TrackPage() {
-  const session = await auth();
-  const userId = session!.user!.id as UserId;
-  const [{ entries }, dashboard] = await Promise.all([
+  const userId = await requireUserId();
+  const [{ entries }, weekTotal] = await Promise.all([
     listCarbonEntries(userId, { take: 20 }),
-    getDashboardData(userId),
+    getWeekTotal(userId),
   ]);
 
   return (
@@ -22,7 +20,7 @@ export default async function TrackPage() {
         <p className="text-gray-500">Log daily activities to build an accurate picture</p>
       </header>
       <TrackingForm />
-      <EntryList entries={entries} weekTotal={dashboard.weekTotal} />
+      <EntryList entries={entries} weekTotal={weekTotal} />
     </div>
   );
 }

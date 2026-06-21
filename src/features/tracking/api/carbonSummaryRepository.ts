@@ -1,5 +1,19 @@
 import { prisma } from '@/lib/prisma';
-import { NATIONAL_AVERAGES, TARGET_DAILY_KG } from '../utils/emissionFactors';
+import {
+  ANNUAL_CAR_OWNERSHIP_KG,
+  DAYS_IN_MONTH,
+  DEFAULT_COUNTRY,
+  DEFAULT_HOUSEHOLD_DIVISOR,
+  getEmissionFactor,
+  getNationalDailyAverage,
+  HOME_SIZE_ANNUAL_FACTOR,
+  ROLLING_AVERAGE_DAYS,
+  STREAK_LOOKBACK_DAYS,
+  TARGET_DAILY_KG,
+  TREND_DECREASE_THRESHOLD,
+  TREND_INCREASE_THRESHOLD,
+  WEEKLY_ROLLUP_WEEKS,
+} from '../utils/emissionFactors';
 import {
   startOfDay,
   endOfDay,
@@ -77,12 +91,12 @@ export async function getCarbonSummary(
   const topCategoryPercent =
     totalKgCO2e > 0 ? Math.round(((byCategory[topCategory] ?? 0) / totalKgCO2e) * 100) : 0;
 
-  const biggest = current.sort((a, b) => b.kgCO2e - a.kgCO2e)[0];
-  const country = user?.country ?? 'GB';
+  const biggest = [...current].sort((a, b) => b.kgCO2e - a.kgCO2e)[0];
+  const country = user?.country ?? DEFAULT_COUNTRY;
 
   let trend: CarbonSummary['trend'] = 'stable';
-  if (totalKgCO2e > prevTotal * 1.05) trend = 'up';
-  else if (totalKgCO2e < prevTotal * 0.95) trend = 'down';
+  if (totalKgCO2e > prevTotal * TREND_INCREASE_THRESHOLD) trend = 'up';
+  else if (totalKgCO2e < prevTotal * TREND_DECREASE_THRESHOLD) trend = 'down';
 
   return {
     totalKgCO2e,
@@ -93,7 +107,7 @@ export async function getCarbonSummary(
       subcategory: biggest?.subcategory ?? 'none',
       kgCO2e: biggest?.kgCO2e ?? 0,
     },
-    nationalAverage: (NATIONAL_AVERAGES[country] ?? NATIONAL_AVERAGES.GB ?? 14.2) * 7 * options.weeks,
+    nationalAverage: getNationalDailyAverage(country) * 7 * options.weeks,
   };
 }
 
@@ -108,9 +122,9 @@ export async function getDashboardData(userId: UserId): Promise<DashboardData> {
   const lastWeekEnd = subWeeks(weekEnd, 1);
   const monthStart = startOfMonth(now);
   const monthEnd = endOfMonth(now);
-  const rollupSince = subWeeks(now, 8);
-  const rollingSince = subDays(now, 90);
-  const streakSince = subDays(now, 400);
+  const rollupSince = subWeeks(now, WEEKLY_ROLLUP_WEEKS);
+  const rollingSince = subDays(now, ROLLING_AVERAGE_DAYS);
+  const streakSince = subDays(now, STREAK_LOOKBACK_DAYS);
 
   const entrySelect = {
     id: true,
@@ -186,8 +200,8 @@ export async function getDashboardData(userId: UserId): Promise<DashboardData> {
   const weekDeltaPercent =
     lastWeekTotal > 0 ? ((weekTotal - lastWeekTotal) / lastWeekTotal) * 100 : 0;
 
-  const country = user?.country ?? 'GB';
-  const dailyNational = NATIONAL_AVERAGES[country] ?? NATIONAL_AVERAGES.GB ?? 14.2;
+  const country = user?.country ?? DEFAULT_COUNTRY;
+  const dailyNational = getNationalDailyAverage(country);
 
   const categoryBreakdown: Record<string, number> = {};
   for (const e of monthEntries) {
@@ -207,7 +221,7 @@ export async function getDashboardData(userId: UserId): Promise<DashboardData> {
     lastWeekTotal,
     weekDeltaPercent,
     monthTotal,
-    nationalAverageMonthly: dailyNational * 30,
+    nationalAverageMonthly: dailyNational * DAYS_IN_MONTH,
     streak: computeStreak(streakEntries.map((e) => e.date)),
     weeklyRollup: getWeeklyRollup(rollupEntries),
     categoryBreakdown,
@@ -228,8 +242,8 @@ export function calculateBaselineFootprint(data: {
   monthlyEnergy?: number;
   homeSize?: number;
 }): number {
-  const dailyNational = NATIONAL_AVERAGES[data.country] ?? NATIONAL_AVERAGES.GB ?? 14.2;
-  let annual = dailyNational * 365 * (data.householdSize / 2.4);
+  const dailyNational = getNationalDailyAverage(data.country);
+  let annual = dailyNational * 365 * (data.householdSize / DEFAULT_HOUSEHOLD_DIVISOR);
 
   const dietMultipliers: Record<string, number> = {
     vegan: 0.6,
@@ -240,9 +254,22 @@ export function calculateBaselineFootprint(data: {
   };
   annual *= dietMultipliers[data.dietType] ?? 1.0;
 
-  if (data.carOwnership) annual += 1200;
-  if (data.monthlyEnergy) annual += data.monthlyEnergy * 0.207 * 12;
-  if (data.homeSize) annual += data.homeSize * 5;
+  if (data.carOwnership) annual += ANNUAL_CAR_OWNERSHIP_KG;
+  if (data.monthlyEnergy) {
+    const electricityFactor = getEmissionFactor('home_energy', 'electricity')?.factor ?? 0.207;
+    annual += data.monthlyEnergy * electricityFactor * 12;
+  }
+  if (data.homeSize) annual += data.homeSize * HOME_SIZE_ANNUAL_FACTOR;
 
   return annual / 1000;
+}
+
+/** Returns the current week's total emissions for a user. */
+export async function getWeekTotal(userId: UserId): Promise<number> {
+  const now = new Date();
+  const entries = await prisma.carbonEntry.findMany({
+    where: { userId, date: { gte: startOfWeek(now), lte: endOfWeek(now) } },
+    select: { kgCO2e: true },
+  });
+  return entries.reduce((sum, entry) => sum + entry.kgCO2e, 0);
 }

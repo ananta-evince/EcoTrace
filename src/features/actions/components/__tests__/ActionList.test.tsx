@@ -9,6 +9,10 @@ vi.mock('../../api/actionActions', () => ({
   completeActionAction: vi.fn(() => Promise.resolve({ ok: true, value: undefined })),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
+
 describe('ActionList', () => {
   it('renders action library header', () => {
     render(<ActionList userActions={[]} />);

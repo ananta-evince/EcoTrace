@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, resetRateLimit } from '@/lib/rateLimit';
 import { getAuthSecret } from '@/lib/env';
+import { parseClientIp } from '@/lib/request';
 import { authConfig } from '@/lib/auth.config';
 
 const loginSchema = z.object({
@@ -14,9 +15,16 @@ const loginSchema = z.object({
   password: z.string().min(8),
 });
 
-const googleConfigured =
-  Boolean(process.env.GOOGLE_CLIENT_ID) && Boolean(process.env.GOOGLE_CLIENT_SECRET);
+function buildGoogleProvider() {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+  return Google({ clientId, clientSecret });
+}
 
+const googleProvider = buildGoogleProvider();
+
+/** NextAuth instance with credentials and optional Google OAuth. */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),
@@ -33,22 +41,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   providers: [
-    ...(googleConfigured
-      ? [
-          Google({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-          }),
-        ]
-      : []),
+    ...(googleProvider ? [googleProvider] : []),
     Credentials({
       credentials: {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const ip =
-          req.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+        const ip = parseClientIp(req.headers?.get('x-forwarded-for'));
         const rateCheck = checkRateLimit(`auth:${ip}`);
         if (!rateCheck.allowed) return null;
 

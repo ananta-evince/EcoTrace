@@ -1,9 +1,10 @@
 'use server';
 
 import { z } from 'zod';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/session';
 import { calculateBaselineFootprint } from '@/features/tracking/api/carbonSummaryRepository';
+import { getNationalDailyAverage, TARGET_ANNUAL_TONNES } from '@/features/tracking/utils/emissionFactors';
 import type { Result } from '@/lib/result';
 import type { UserId } from '@/features/tracking/types';
 
@@ -20,12 +21,6 @@ const step2Schema = z.object({
   monthlyEnergy: z.coerce.number().positive(),
   homeSize: z.coerce.number().positive(),
 });
-
-async function requireUserId(): Promise<UserId> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('Unauthorized');
-  return session.user.id as UserId;
-}
 
 /** Saves onboarding step 1 data. */
 export async function saveOnboardingStep1(
@@ -108,15 +103,11 @@ export async function completeOnboarding(): Promise<
     data: { completed: true, step: 3 },
   });
 
-  const { NATIONAL_AVERAGES, TARGET_ANNUAL_TONNES } = await import(
-    '@/features/tracking/utils/emissionFactors'
-  );
-
   return {
     ok: true,
     value: {
       annualFootprint,
-      nationalAverage: ((NATIONAL_AVERAGES[user.country] ?? 14.2) * 365) / 1000,
+      nationalAverage: (getNationalDailyAverage(user.country) * 365) / 1000,
       target: TARGET_ANNUAL_TONNES,
     },
   };

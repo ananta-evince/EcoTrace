@@ -1,6 +1,7 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { deleteEntryAction } from '../api/entryActions';
 import { Button } from '@/components/ui/Button';
 import { formatDate, formatKgCO2e } from '@/lib/utils';
@@ -21,12 +22,21 @@ type EntryListProps = {
   weekTotal: number;
 };
 
+/** Displays recent carbon entries with delete support. */
 export function EntryList({ entries, weekTotal }: EntryListProps) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {
+    setError(null);
     startTransition(async () => {
-      await deleteEntryAction(id);
+      const result = await deleteEntryAction(id);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      router.refresh();
     });
   };
 
@@ -40,6 +50,12 @@ export function EntryList({ entries, weekTotal }: EntryListProps) {
           This week: {formatKgCO2e(weekTotal)}
         </p>
       </div>
+
+      {error && (
+        <p role="alert" className="mb-4 text-sm text-carbon-high">
+          ⚠ {error}
+        </p>
+      )}
 
       {entries.length === 0 ? (
         <p className="text-gray-500 dark:text-gray-400">No entries yet. Log your first activity above.</p>

@@ -1,11 +1,10 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireUserId } from '@/lib/session';
 import { generateGeminiContent } from '@/lib/gemini';
 import { prisma } from '@/lib/prisma';
 import { hashString } from '@/lib/utils';
 import { getCarbonSummary } from '@/features/tracking/api/carbonSummaryRepository';
-import type { UserId } from '@/features/tracking/types';
 
 const MAX_RETRIES = 3;
 const TIMEOUT_MS = 30_000;
@@ -49,10 +48,7 @@ export async function generateInsightsAction(): Promise<{
   cached: boolean;
   generatedAt: Date;
 }> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('Unauthorized');
-
-  const userId = session.user.id as UserId;
+  const userId = await requireUserId();
   const summary = await getCarbonSummary(userId, { weeks: 4 });
 
   const dataKey = JSON.stringify(summary);
@@ -96,12 +92,11 @@ function buildFallbackInsights(summary: Awaited<ReturnType<typeof getCarbonSumma
 **This week:** Try logging one alternative transport trip and compare the CO₂ difference.`;
 }
 
-/** Gets the latest cached insight. */
+/** Gets the latest cached insight for the authenticated user. */
 export async function getLatestInsightAction() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+  const userId = await requireUserId();
   return prisma.insight.findFirst({
-    where: { userId: session.user.id },
+    where: { userId },
     orderBy: { generatedAt: 'desc' },
   });
 }

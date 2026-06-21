@@ -7,6 +7,10 @@ vi.mock('../../api/entryActions', () => ({
   deleteEntryAction: vi.fn(() => Promise.resolve({ ok: true, value: undefined })),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
+
 const entries = [
   {
     id: 'e1',

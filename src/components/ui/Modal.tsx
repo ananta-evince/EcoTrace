@@ -13,6 +13,7 @@ type ModalProps = {
   triggerRef?: React.RefObject<HTMLElement | null>;
 };
 
+/** Accessible modal dialog with focus trap and escape-to-close. */
 export function Modal({ open, onClose, title, children, triggerRef }: ModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
