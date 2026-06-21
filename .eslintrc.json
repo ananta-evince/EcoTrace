@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:security/recommended-legacy",
+    "prettier"
+  ],
+  "plugins": ["import", "jsx-a11y", "security"],
+  "rules": {
+    "import/no-cycle": "error",
+    "import/no-default-export": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "security/detect-object-injection": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
+  }
+}

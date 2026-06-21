@@ -1,0 +1,9 @@
+2026-06-21 16:52:48.827 IST [37184] LOG:  starting PostgreSQL 18.2 on x86_64-windows, compiled by msvc-19.44.35222, 64-bit
+2026-06-21 16:52:48.839 IST [37184] LOG:  listening on IPv6 address "::1", port 5433
+2026-06-21 16:52:48.839 IST [37184] LOG:  listening on IPv4 address "127.0.0.1", port 5433
+2026-06-21 16:52:48.995 IST [39596] LOG:  database system was shut down at 2026-06-21 16:52:43 IST
+2026-06-21 16:52:49.021 IST [37184] LOG:  database system is ready to accept connections
+2026-06-21 16:53:08.878 IST [2952] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-06-21 16:57:48.979 IST [36032] LOG:  checkpoint starting: time
+2026-06-21 16:59:46.044 IST [36032] LOG:  checkpoint complete: wrote 1068 buffers (6.5%), wrote 3 SLRU buffers; 1 WAL file(s) added, 0 removed, 0 recycled; write=116.203 s, sync=0.646 s, total=117.066 s; sync files=357, longest=0.014 s, average=0.002 s; distance=5251 kB, estimate=5251 kB; lsn=0/1D11FC8, redo lsn=0/1D11F38
